@@ -1,0 +1,14 @@
+if(!spoken_collin){
+	Guide : "Hello! My name is Collin, and I am here to show you how to make your town."
+	Guide : "First you should fix this old town hall. You'll need 10 wood for that."
+	if(@Player has 10 wood){
+		Guide : "Oh, you already got it! It's almost like you've done this before."
+	}
+	set spoken_collin 1
+	end
+}
+if(@Player has 10 wood){
+	Guide : "Great! With this wood you brought us we can start repairing the hall."
+	end
+}
+Guide : "I need 10 wood to repair the hall."

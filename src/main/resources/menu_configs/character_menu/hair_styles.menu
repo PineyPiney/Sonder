@@ -1,0 +1,9 @@
+[category] Colours 	: [button_prefab] IconButton    : [icon] hair_style	: [message] texture : [columns] 5   : [width] .2f   : [height] .2f
+	[name] Bald		: [icon] hair_styles/bald	: [texture] hair
+	[name] Hair 1		: [icon] hair_styles/hair1	: [texture] hair1
+	[name] Hair 2		: [icon] hair_styles/hair2	: [texture] hair2
+	[name] Hair 3		: [icon] hair_styles/hair3	: [texture] hair3
+	[name] Hair 4		: [icon] hair_styles/hair4	: [texture] hair4
+	[name] Hair 5		: [icon] hair_styles/hair5	: [texture] hair5
+	[name] Hair 6		: [icon] hair_styles/hair6	: [texture] hair6
+	[name] Hair 7		: [icon] hair_styles/hair7	: [texture] hair7

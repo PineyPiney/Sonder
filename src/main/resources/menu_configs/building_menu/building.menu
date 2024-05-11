@@ -1,0 +1,16 @@
+[name] Furniture : [icon] building/chair_button
+	[name] Chairs : [icon] building/chair_button : [prefab] Chair
+		[file] chairs.menu
+	[name] Plants : [icon] building/plant_button : [prefab] Plant
+		[file] plants.menu
+	[name] Tables : [icon] building/table_button : [prefab] Table
+		[file] tables.menu
+
+[name] Structures : [icon] building/wall_button
+	[name] Doors : [icon] building/door_button : [prefab] Door
+		[file] doors.menu
+	[name] Walls : [icon] building/wall_button : [prefab] Wall
+		[file] walls.menu
+	[name] Windows : [icon] building/window_button : [prefab] Window
+		[file] windows.menu
+		
