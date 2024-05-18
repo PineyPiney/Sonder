@@ -8,18 +8,27 @@ version = "1.0-SNAPSHOT"
 val lwjglVersion = "3.3.3"
 
 // Use https://www.lwjgl.org/customize to set natives
-val lwjglNatives = Pair(
-    System.getProperty("os.name")!!,
-    System.getProperty("os.arch")!!
-).let { (name, arch) ->
+val lwjglNatives = run {
+    val name = System.getProperty("os.name")
+    val arch = System.getProperty("os.arch")
+    val a64 = arch.startsWith("aarch64")
     when {
+        name.startsWith("Windows") -> {
+            if(arch.contains("64")) "natives-windows${if(a64) "-arm64" else ""}"
+            else "natives-windows-x86"
+        }
         arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) } -> {
-            "natives-macos${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+            if(a64) "natives-macos-arm64" else "natives-macos"
         }
-
-        arrayOf("Windows").any { name.startsWith(it) } -> {
-            "natives-windows"
-        }
+        arrayOf("Linux", "SunOS", "Unit").any { name.startsWith(it) } ->
+            if (arrayOf("arm", "aarch64").any { arch.startsWith(it) })
+                "natives-linux${if (arch.contains("64") || arch.startsWith("armv8")) "-arm64" else "-arm32"}"
+            else if (arch.startsWith("ppc"))
+                "natives-linux-ppc64le"
+            else if (arch.startsWith("riscv"))
+                "natives-linux-riscv64"
+            else
+                "natives-linux"
 
         else -> throw Error("Unrecognized or unsupported platform. Please set \"lwjglNatives\" manually")
     }
@@ -73,3 +82,32 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+/*
+
+val lwjglNatives = Pair(
+	System.getProperty("os.name")!!,
+	System.getProperty("os.arch")!!
+).let { (name, arch) ->
+	when {
+		arrayOf("Linux", "SunOS", "Unit").any { name.startsWith(it) } ->
+			if (arrayOf("arm", "aarch64").any { arch.startsWith(it) })
+				"natives-linux${if (arch.contains("64") || arch.startsWith("armv8")) "-arm64" else "-arm32"}"
+			else if (arch.startsWith("ppc"))
+				"natives-linux-ppc64le"
+			else if (arch.startsWith("riscv"))
+				"natives-linux-riscv64"
+			else
+				"natives-linux"
+		arrayOf("Mac OS X", "Darwin").any { name.startsWith(it) }     ->
+			"natives-macos${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+		arrayOf("Windows").any { name.startsWith(it) }                ->
+			if (arch.contains("64"))
+				"natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+			else
+				"natives-windows-x86"
+		else                                                                            ->
+			throw Error("Unrecognized or unsupported platform. Please set \"lwjglNatives\" manually")
+	}
+}
+ */

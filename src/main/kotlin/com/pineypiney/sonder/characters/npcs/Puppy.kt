@@ -1,7 +1,7 @@
 package com.pineypiney.sonder.characters.npcs
 
 import com.pineypiney.game_engine.objects.components.AnimatedComponent
-import com.pineypiney.game_engine.objects.components.ColliderComponent
+import com.pineypiney.game_engine.objects.components.Collider2DComponent
 import com.pineypiney.game_engine.objects.components.SpriteComponent
 import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.game_engine.objects.util.Animation
@@ -19,7 +19,7 @@ class Puppy: GameObject2D() {
 
     override fun addComponents() {
         super.addComponents()
-        components.add(ColliderComponent(this, Rect2D(Vec2(-0.5f, -1f), Vec2(1f, 2f))))
+        components.add(Collider2DComponent(this, Rect2D(Vec2(-0.5f, -1f), Vec2(1f, 2f))))
         components.add(SpriteComponent(this, TextureLoader[ResourceKey("characters/puppy/idle/Untitled_Artwork-1")], 600f))
 
         val idle = Animation("idle", 6f, "characters/puppy/idle", (1..4).map { "Untitled_Artwork-$it" }, "characters/puppy/idle")

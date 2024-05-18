@@ -4,13 +4,13 @@ import com.pineypiney.game_engine.util.input.ControlType
 import com.pineypiney.game_engine.util.input.InputState
 import com.pineypiney.sonder.SonderEngine
 import com.pineypiney.sonder.SonderLogic
-import com.pineypiney.sonder.characters.player.RenderedPlayer
+import com.pineypiney.sonder.characters.player.PlayerObject
 import com.pineypiney.sonder.scenes.menu.PauseMenu
 import org.lwjgl.glfw.GLFW
 
 abstract class SonderGameLogic(engine: SonderEngine): SonderLogic(engine) {
 
-    abstract val player: RenderedPlayer
+    abstract val player: PlayerObject
 
     override fun onInput(state: InputState, action: Int): Int {
         if(super.onInput(state, action) == INTERRUPT) return INTERRUPT

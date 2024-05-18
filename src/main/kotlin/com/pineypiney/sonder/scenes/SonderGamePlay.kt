@@ -1,7 +1,8 @@
 package com.pineypiney.sonder.scenes
 
 import com.pineypiney.game_engine.objects.GameObject
-import com.pineypiney.game_engine.objects.components.ColliderComponent
+import com.pineypiney.game_engine.objects.components.Collider3DComponent
+import com.pineypiney.game_engine.objects.components.ColouredSpriteComponent
 import com.pineypiney.game_engine.objects.components.applied
 import com.pineypiney.game_engine.objects.menu_items.MenuItem
 import com.pineypiney.game_engine.resources.shaders.ShaderLoader
@@ -14,23 +15,26 @@ import com.pineypiney.game_engine.window.WindowI
 import com.pineypiney.sonder.SonderEngine
 import com.pineypiney.sonder.building.Building
 import com.pineypiney.sonder.building.ItemPlacer
-import com.pineypiney.sonder.characters.player.RenderedPlayer
+import com.pineypiney.sonder.characters.player.PlayerObject
 import com.pineypiney.sonder.ui.GamePadKeyLabel
 import com.pineypiney.sonder.ui.phone.Phone
 import com.pineypiney.sonder.util.UtilObjects
 import com.pineypiney.sonder.util.dialogue.DialogueUtil
 import glm_.func.common.abs
+import glm_.quat.Quat
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
+import glm_.vec3.swizzle.xz
 import glm_.vec4.Vec4
 import org.lwjgl.glfw.GLFW
+import kotlin.math.*
 
 abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
 
     abstract val size: Float
     abstract val floor: Float
 
-    override val player: RenderedPlayer = RenderedPlayer()
+    override val player: PlayerObject = PlayerObject()
 
     //val buildMenu = BuildingBubble().apply { active = false }
     val placer by lazy { ItemPlacer(GameObject(), this).applied() }
@@ -48,10 +52,14 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
     }
 
     override fun addObjects() {
+        val s1 = size + 1f
+        val s05 = size + .5f
         val barriers = arrayOf(
-            UtilObjects.barrier(Vec2(-(size + 1f), -5f), Vec2(1f, 10f)),
-            UtilObjects.barrier(Vec2(size, -5f), Vec2(1f, 10f)),
-            UtilObjects.barrier(Vec2(-size, -10f), Vec2(size * 2f, 5 + floor)),
+            UtilObjects.barrier3D(Vec3(0f, -.5f, 0f), Vec3(2f * s1, 1f, 2f * s1)),
+            UtilObjects.barrier3D(Vec3(0f, 2.5f, -s05), Vec3(2f * s1, 5f, 1f)),
+            UtilObjects.barrier3D(Vec3(0f, 2.5f, s05), Vec3(2f * s1, 5f, 1f)),
+            UtilObjects.barrier3D(Vec3(-s05, 2.5f, -0f), Vec3(1f, 5f, size * 2f)),
+            UtilObjects.barrier3D(Vec3(s05, 2.5f, -0f), Vec3(1f, 5f, size * 2f)),
         )
 
         add(player, *barriers)
@@ -70,14 +78,25 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
         }
     }
 
+    override fun init() {
+        super.init()
+        val f = -sqrt(1f/3f)
+        renderer.camera.cameraRight = Vec3(sqrt(2f), 0f, -sqrt(2f))
+        renderer.camera.cameraFront.put(f, f, f)
+    }
+
     override fun render(tickDelta: Double) {
-        if(player.velocity2D.x.abs > 0.1f) {
-            if (player.character!!.animation.name == "idle") {
-                player.character!!.setAnimation("walk")
+
+        if(player.velocity.xz.length2() > 0.01f) {
+            val (texture, flip) = player.renderChild.getAnimation(player.velocity.run { atan2(-z, x) })
+            if(abs(player.velocity.run { x - z }) > 0.1f) player.renderChild.flipY = flip
+            player.renderChild.getComponent<ColouredSpriteComponent>()?.texture = texture
+            if (player.player?.animation?.name == "idle") {
+                player.player?.setAnimation("walk")
             }
         }
-        else if(player.character!!.animation.name == "walk"){
-            player.character!!.setAnimation("idle")
+        else if(player.player?.animation?.name == "walk"){
+            player.player?.setAnimation("idle")
         }
 
         super.render(tickDelta)
@@ -104,18 +123,18 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
                     }
 
                     InputState(' '), InputState(GLFW.GLFW_GAMEPAD_BUTTON_A, ControlType.GAMEPAD_BUTTON) -> {
-                        if (player.getComponent<ColliderComponent>()
+                        if (player.getComponent<Collider3DComponent>()
                                 ?.isGrounded() == true && !player.buildMode
-                        ) player.velocity2D = Vec2(player.velocity2D.x, 9f)
+                        ) player.velocity = Vec3(player.velocity.x, 9f, player.velocity.z)
                     }
 
                     InputState('R') -> {
-                        player.position2D = Vec2(-35f, 0f)
-                        player.velocity2D = Vec2(0f)
+                        player.position = Vec3(-35f, 0f, 0f)
+                        player.velocity = Vec3(0f)
                     }
 
                     InputState('G') -> {
-                        DialogueUtil.setDialogue(player.character!!, "Hello my namem is PHILMNIP!")
+                        DialogueUtil.setDialogue(player.player!!, "Hello my namem is PHILMNIP!")
                     }
                 }
             }
@@ -137,12 +156,12 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
 
         val move = Vec2()
         if(gameEngine.inputType == ControlType.KEYBOARD) {
-            if (player.buildMode) {
-                if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_W) == 1) move += Vec2(0, 1)
-                if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_S) == 1) move += Vec2(0, -1)
-            }
+            if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_W) == 1) move += Vec2(0, 1)
+            if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_S) == 1) move += Vec2(0, -1)
+
             if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_D) == 1) move += Vec2(1, 0)
             if (GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_A) == 1) move += Vec2(-1, 0)
+            if(move.length2() > 1f) move.normalizeAssign()
             move *= (1f + GLFW.glfwGetKey(window.windowHandle, GLFW.GLFW_KEY_LEFT_SHIFT))
         }
         else {
@@ -156,12 +175,34 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
             move *= (1.5f + pad.axesStates[GLFW.GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] * .5f)
         }
 
-        if(player.buildMode) {
-            renderer.camera.translate(Vec2(move * interval * renderer.camera.zoom))
-        }
-        else {
-            player.velocity2D = Vec2(move.x * 4f, player.velocity2D.y)
-            renderer.camera.setPos(Vec3(player.position2D))
+        //if(player.buildMode) {
+        //    renderer.camera.translate(Vec2(move * interval * renderer.camera.zoom))
+        //}
+        //else {
+        //    player.velocity2D = Vec2(move.x * 4f, player.velocity2D.y)
+        //    renderer.camera.setPos(player.position - (renderer.camera.cameraFront * 5f))
+        //}
+
+        // move.x(1, -1) + move.y(-1, -1)
+        val v = Vec2(move.x - move.y, -(move.x + move.y)) * 2f
+        player.velocity = Vec3(v.x, player.velocity.y, v.y)
+        val h = renderer.camera.cameraPos.y - player.position.y
+        renderer.camera.setPos(player.position + Vec3(h))
+    }
+
+    override fun onCursorMove(cursorPos: Vec2, cursorDelta: Vec2) {
+        super.onCursorMove(cursorPos, cursorDelta)
+
+        renderer.apply {
+            /*
+            var yaw = camera.cameraRight.run { Vec2(-x, z) }.angle().toDouble()
+            var pitch = camera.cameraFront.run { atan2(y, Vec2(x, z).length()) }.toDouble()
+            yaw += cursorDelta.x * .3
+            pitch = (pitch + cursorDelta.y * .3).coerceIn(PI * -.4999, PI * .4999)
+
+            eulerToVector(yaw, pitch, camera.cameraFront)
+            camera.updateCameraVectors()
+             */
         }
     }
 
@@ -184,6 +225,11 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
     override fun updateAspectRatio(window: WindowI) {
         super.updateAspectRatio(window)
 
-        renderer.camera.updateBounds(Vec2(size, 5f))
+        renderer.camera.updateBounds(Vec2(size + 10f))
+    }
+
+    companion object {
+        private val m_isometricRotation = Quat(Vec3(atan(-1f / sqrt(2f)), PI * .25f, 0f))
+        val isometricRotation get() = Quat(m_isometricRotation)
     }
 }

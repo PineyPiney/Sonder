@@ -1,12 +1,12 @@
 package com.pineypiney.sonder.characters.npcs
 
 import com.pineypiney.game_engine.objects.components.AnimatedComponent
-import com.pineypiney.game_engine.objects.components.ColliderComponent
+import com.pineypiney.game_engine.objects.components.Collider2DComponent
 import com.pineypiney.game_engine.objects.components.GameClickerComponent
 import com.pineypiney.game_engine.objects.components.SpriteComponent
 import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.game_engine.objects.util.Animation
-import com.pineypiney.game_engine.objects.util.collision.CollisionBoxRenderer
+import com.pineypiney.game_engine.objects.util.collision.CollisionBox2DRenderer
 import com.pineypiney.game_engine.resources.textures.TextureLoader
 import com.pineypiney.game_engine.util.ResourceKey
 import com.pineypiney.game_engine.util.maths.shapes.Rect2D
@@ -20,7 +20,7 @@ class Jonathon: GameObject2D() {
 
     override fun addComponents() {
         super.addComponents()
-        components.add(ColliderComponent(this, Rect2D(Vec2(-1.5f, -1.8f), Vec2(3f, 3.6f))))
+        components.add(Collider2DComponent(this, Rect2D(Vec2(-1.5f, -1.8f), Vec2(3f, 3.6f))))
         components.add(SpriteComponent(this, TextureLoader[ResourceKey("characters/red_panda/idle_0")], 400f))
         val idle = Animation("idle", 6f, "characters/red_panda", (0..4).map { "idle_$it" }, "characters/jonathon/idle")
         components.add(AnimatedComponent(this, idle, listOf(
@@ -36,6 +36,6 @@ class Jonathon: GameObject2D() {
     }
 
     override fun addChildren() {
-        addChild(CollisionBoxRenderer(this))
+        addChild(CollisionBox2DRenderer(this))
     }
 }

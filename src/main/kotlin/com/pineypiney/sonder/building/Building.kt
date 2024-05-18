@@ -24,9 +24,9 @@ class Building(parent: GameObject, val origin: Vec2, val size: Vec2) : Component
 			MeshedTextureComponent(this, TextureLoader[ResourceKey("edit/walls/inside/wooden")], vShape = shape)
 		)
 		addChild(
-			UtilObjects.barrier(Vec2(origin.x - 1f, origin.y), Vec2(1f, size.y)),
-			UtilObjects.barrier(Vec2(origin.x + size.x, origin.y), Vec2(1f, size.y)),
-			UtilObjects.barrier(Vec2(origin.x - 1f, origin.y + size.y), Vec2(size.x + 2f, 1f))
+			UtilObjects.barrier2D(Vec2(origin.x - 1f, origin.y), Vec2(1f, size.y)),
+			UtilObjects.barrier2D(Vec2(origin.x + size.x, origin.y), Vec2(1f, size.y)),
+			UtilObjects.barrier2D(Vec2(origin.x - 1f, origin.y + size.y), Vec2(size.x + 2f, 1f))
 		)
 		active = false
 	}

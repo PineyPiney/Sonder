@@ -1,4 +1,4 @@
-package com.pineypiney.sonder.characters.player
+package com.pineypiney.sonder.characters.player.render
 
 import com.pineypiney.game_engine.objects.components.Component
 import com.pineypiney.game_engine.objects.util.Animation

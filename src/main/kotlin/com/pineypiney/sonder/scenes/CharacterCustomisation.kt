@@ -6,7 +6,7 @@ import com.pineypiney.game_engine.util.extension_functions.fromHex
 import com.pineypiney.game_engine.util.input.ControlType
 import com.pineypiney.game_engine.util.input.InputState
 import com.pineypiney.sonder.SonderEngine
-import com.pineypiney.sonder.characters.player.RenderedPlayer
+import com.pineypiney.sonder.characters.player.PlayerObject
 import com.pineypiney.sonder.ui.GamePadKeyLabel
 import com.pineypiney.sonder.ui.character_customisation.CharacterPart
 import com.pineypiney.sonder.ui.character_customisation.CharacterPartComponent
@@ -19,15 +19,15 @@ import org.lwjgl.glfw.GLFW
 
 class CharacterCustomisation(engine: SonderEngine, val parent: SonderGameLogic) : SonderGameLogic(engine) {
 
-    override val player = RenderedPlayer()
+    override val player = PlayerObject()
 
     val parts get() = gameObjects.getAllComponentInstances<CharacterPartComponent>().toList()
 
     override fun addObjects() {
         add(player)
-        add(CharacterPart("skin_tones", Vec2(-0.9f, 0.3f), Vec2(0.9f)){ player.skinTone = (Vec3.fromHex(it.parseInt(16))) })
-        add(CharacterPart("hair_colours", Vec2(0.4f, 0.3f), Vec2(0.9f)){ player.hairColour = (Vec3.fromHex(it.parseInt(16))) })
-        add(CharacterPart("hair_styles", Vec2(0.4f, -0.4f), Vec2(0.9f)){ player.hairStyle = "characters/player/hair/$it" })
+        add(CharacterPart("skin_tones", Vec2(-0.9f, 0.3f), Vec2(0.9f)){ player.renderChild.skinTone = (Vec3.fromHex(it.parseInt(16))) })
+        add(CharacterPart("hair_colours", Vec2(0.4f, 0.3f), Vec2(0.9f)){ player.renderChild.hairColour = (Vec3.fromHex(it.parseInt(16))) })
+        add(CharacterPart("hair_styles", Vec2(0.4f, -0.4f), Vec2(0.9f)){ player.renderChild.hairStyle = "characters/player/hair/$it" })
         when(gameEngine.inputType){
             ControlType.KEYBOARD -> add(
                 TextButton("Done", Vec2(0.5f, -0.9f), Vec2(0.4f, 0.2f)){
@@ -46,7 +46,7 @@ class CharacterCustomisation(engine: SonderEngine, val parent: SonderGameLogic) 
     override fun init() {
         super.init()
         parent.player copyDetailsTo player
-        player.character?.gravity = false
+        player.player?.gravity = false
     }
 
     override fun open() {

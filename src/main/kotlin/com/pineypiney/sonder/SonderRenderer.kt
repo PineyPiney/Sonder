@@ -1,6 +1,7 @@
 package com.pineypiney.sonder
 
 import com.pineypiney.game_engine.GameEngineI
+import com.pineypiney.game_engine.objects.GameObject
 import com.pineypiney.game_engine.objects.ObjectCollection
 import com.pineypiney.game_engine.objects.components.PreRenderComponent
 import com.pineypiney.game_engine.objects.components.RenderedComponentI
@@ -58,7 +59,7 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
         GLFunc.depthTest = true
         d.add() //0
 
-        renderLayer(game, tickDelta, 0)
+        renderLayer(game, tickDelta, 0) { position.z }
 
         d.add() //1
 
@@ -70,7 +71,7 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
 
         d.add() //2
 
-        renderLayer(game, tickDelta, 1)
+        renderLayer(game, tickDelta, 1){ -(position - camera.cameraPos).length2() }
 
         d.add() //3
 
@@ -91,8 +92,8 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
         }
     }
 
-    fun renderLayer(game: SonderLogic, tickDelta: Double, layer: Int){
-        for(o in game.gameObjects[layer].flatMap { it.allActiveDescendants() }.sortedBy { it.position.z }) {
+    fun renderLayer(game: SonderLogic, tickDelta: Double, layer: Int, sort: GameObject.() -> Float){
+        for(o in game.gameObjects[layer].flatMap { it.allActiveDescendants() }.sortedBy { it.sort() }) {
             val renderedComponents = o.components.filterIsInstance<RenderedComponentI>().filter { it.visible }
             val preRendererComponent = o.components.filterIsInstance<PreRenderComponent>()
             if(renderedComponents.isEmpty()){

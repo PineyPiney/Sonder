@@ -2,20 +2,19 @@ package com.pineypiney.sonder.characters
 
 import com.pineypiney.game_engine.objects.GameObject
 import com.pineypiney.game_engine.objects.components.AnimatedComponent
-import com.pineypiney.game_engine.objects.components.ColliderComponent
+import com.pineypiney.game_engine.objects.components.Collider3DComponent
 import com.pineypiney.game_engine.objects.components.Component
 import com.pineypiney.game_engine.objects.components.UpdatingComponent
 import com.pineypiney.game_engine.objects.util.Animation
-import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 
 abstract class Character(parent: GameObject): Component(parent, "CHR"), UpdatingComponent{
 
     var gravity = true
 
-    var animation: Animation
-        get() = parent.getComponent<AnimatedComponent>()!!.animation
-        set(value) { parent.getComponent<AnimatedComponent>()?.animation = value }
+    var animation: Animation?
+        get() = parent.allDescendants().firstNotNullOfOrNull { it.getComponent<AnimatedComponent>() }?.animation
+        set(value) { value?.let { v -> parent.allDescendants().firstNotNullOfOrNull { it.getComponent<AnimatedComponent>() }?.animation = v } }
 
     override val fields: Array<Field<*>> = arrayOf(
         BooleanField("gvt", ::gravity){ gravity = it }
@@ -29,8 +28,8 @@ abstract class Character(parent: GameObject): Component(parent, "CHR"), Updating
     }
 
     fun move(walk: Vec3){
-        val collider = parent.getComponent<ColliderComponent>() ?: return
-        parent.translate(Vec3(collider.checkAllCollisions(Vec2(walk))))
+        val collider = parent.getComponent<Collider3DComponent>() ?: return
+        parent.translate(collider.checkAllCollisions(walk))
     }
 
     open fun getScriptFunctions(): Map<String, (String) -> Int> = emptyMap()
