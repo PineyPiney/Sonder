@@ -1,10 +1,10 @@
 package com.pineypiney.sonder.characters.npcs
 
+import com.pineypiney.game_engine.objects.GameObject
 import com.pineypiney.game_engine.objects.components.AnimatedComponent
 import com.pineypiney.game_engine.objects.components.Collider2DComponent
 import com.pineypiney.game_engine.objects.components.GameClickerComponent
 import com.pineypiney.game_engine.objects.components.SpriteComponent
-import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.game_engine.objects.util.Animation
 import com.pineypiney.game_engine.objects.util.collision.CollisionBox2DRenderer
 import com.pineypiney.game_engine.resources.textures.TextureLoader
@@ -14,7 +14,7 @@ import com.pineypiney.sonder.characters.Character
 import com.pineypiney.sonder.util.dialogue.DialogueUtil
 import glm_.vec2.Vec2
 
-class Jonathon: GameObject2D() {
+class Jonathon: GameObject() {
 
     override var name: String = "Guide"
 

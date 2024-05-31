@@ -7,12 +7,15 @@ import com.pineypiney.game_engine.objects.components.applied
 import com.pineypiney.game_engine.objects.menu_items.MenuItem
 import com.pineypiney.game_engine.resources.shaders.ShaderLoader
 import com.pineypiney.game_engine.util.ResourceKey
+import com.pineypiney.game_engine.util.extension_functions.angle
 import com.pineypiney.game_engine.util.extension_functions.isWithin
 import com.pineypiney.game_engine.util.input.ControlType
 import com.pineypiney.game_engine.util.input.InputState
 import com.pineypiney.game_engine.util.input.Inputs
+import com.pineypiney.game_engine.util.maths.eulerToVector
 import com.pineypiney.game_engine.window.WindowI
 import com.pineypiney.sonder.SonderEngine
+import com.pineypiney.sonder.SonderWindow
 import com.pineypiney.sonder.building.Building
 import com.pineypiney.sonder.building.ItemPlacer
 import com.pineypiney.sonder.characters.player.PlayerObject
@@ -24,16 +27,19 @@ import glm_.func.common.abs
 import glm_.quat.Quat
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
-import glm_.vec3.swizzle.xz
 import glm_.vec4.Vec4
 import org.lwjgl.glfw.GLFW
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.sqrt
 
 abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
 
     abstract val size: Float
     abstract val floor: Float
 
+    var freedom = false
     override val player: PlayerObject = PlayerObject()
 
     //val buildMenu = BuildingBubble().apply { active = false }
@@ -80,24 +86,23 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
 
     override fun init() {
         super.init()
-        val f = -sqrt(1f/3f)
-        renderer.camera.cameraRight = Vec3(sqrt(2f), 0f, -sqrt(2f))
-        renderer.camera.cameraFront.put(f, f, f)
+        trap()
+        colour = Vec4(0f, 1f, 0f, 1f)
+		renderer.camera.setPos(Vec3(renderer.camera.y))
     }
 
     override fun render(tickDelta: Double) {
 
-        if(player.velocity.xz.length2() > 0.01f) {
-            val (texture, flip) = player.renderChild.getAnimation(player.velocity.run { atan2(-z, x) })
-            if(abs(player.velocity.run { x - z }) > 0.1f) player.renderChild.flipY = flip
-            player.renderChild.getComponent<ColouredSpriteComponent>()?.texture = texture
-            if (player.player?.animation?.name == "idle") {
-                player.player?.setAnimation("walk")
-            }
+        val (_, texture, frames, _, speed, flip) = player.renderChild.updateAnimation(player.velocity)
+        /*if(player.velocity.xz.length2() > .01f && abs(player.velocity.run { x - z }) > 0.1f) */player.renderChild.flipY = flip
+
+        if(frames != player.renderChild.frames){
+            player.renderChild.frames = frames
+            player.renderChild.invFrames = 1f / frames
+            player.renderChild.animationSpeed = speed
+            player.renderChild.scale = Vec3(player.renderChild.invFrames, 1f, 1f)
         }
-        else if(player.player?.animation?.name == "walk"){
-            player.player?.setAnimation("idle")
-        }
+        player.renderChild.getComponent<ColouredSpriteComponent>()?.texture = texture
 
         super.render(tickDelta)
     }
@@ -123,8 +128,8 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
                     }
 
                     InputState(' '), InputState(GLFW.GLFW_GAMEPAD_BUTTON_A, ControlType.GAMEPAD_BUTTON) -> {
-                        if (player.getComponent<Collider3DComponent>()
-                                ?.isGrounded() == true && !player.buildMode
+                        if (player.getComponent<Collider3DComponent>()?.isGrounded() == true &&
+                            !player.buildMode
                         ) player.velocity = Vec3(player.velocity.x, 9f, player.velocity.z)
                     }
 
@@ -136,6 +141,7 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
                     InputState('G') -> {
                         DialogueUtil.setDialogue(player.player!!, "Hello my namem is PHILMNIP!")
                     }
+                    InputState('F') -> if(freedom) trap() else free()
                 }
             }
         }
@@ -183,26 +189,31 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
         //    renderer.camera.setPos(player.position - (renderer.camera.cameraFront * 5f))
         //}
 
-        // move.x(1, -1) + move.y(-1, -1)
-        val v = Vec2(move.x - move.y, -(move.x + move.y)) * 2f
-        player.velocity = Vec3(v.x, player.velocity.y, v.y)
-        val h = renderer.camera.cameraPos.y - player.position.y
-        renderer.camera.setPos(player.position + Vec3(h))
+        if(freedom){
+            renderer.camera.translate(renderer.camera.cameraFront * move.y + renderer.camera.cameraRight * move.x)
+        }
+        else {
+            // move.x(1, -1) + move.y(-1, -1)
+            val v = Vec2(move.x - move.y, -(move.x + move.y)) * 2f
+            player.velocity = Vec3(v.x, player.velocity.y, v.y)
+            val h = renderer.camera.cameraPos.y - player.position.y
+            renderer.camera.setPos(player.position + Vec3(h))
+        }
     }
 
     override fun onCursorMove(cursorPos: Vec2, cursorDelta: Vec2) {
         super.onCursorMove(cursorPos, cursorDelta)
 
-        renderer.apply {
-            /*
-            var yaw = camera.cameraRight.run { Vec2(-x, z) }.angle().toDouble()
-            var pitch = camera.cameraFront.run { atan2(y, Vec2(x, z).length()) }.toDouble()
-            yaw += cursorDelta.x * .3
-            pitch = (pitch + cursorDelta.y * .3).coerceIn(PI * -.4999, PI * .4999)
+        if(freedom) {
+            renderer.apply {
+                var yaw = camera.cameraRight.run { Vec2(-x, z) }.angle().toDouble()
+                var pitch = camera.cameraFront.run { atan2(y, Vec2(x, z).length()) }.toDouble()
+                yaw += cursorDelta.x * .3
+                pitch = (pitch + cursorDelta.y * .3).coerceIn(PI * -.4999, PI * .4999)
 
-            eulerToVector(yaw, pitch, camera.cameraFront)
-            camera.updateCameraVectors()
-             */
+                eulerToVector(yaw, pitch, camera.cameraFront)
+                camera.updateCameraVectors()
+            }
         }
     }
 
@@ -218,14 +229,28 @@ abstract class SonderGamePlay(engine: SonderEngine): SonderGameLogic(engine) {
         val buildings = gameObjects.getAllComponentInstances<Building>(0)
         return buildings.firstOrNull {
             val scale = Vec2(it.parent.transformComponent.worldScale)
-            renderer.camera.screenToWorld(input.mouse.lastPos).isWithin(Vec2(it.parent.transformComponent.worldPosition) + (it.origin * scale), it.size * scale)
+            Vec2(renderer.camera.screenToWorld(input.mouse.lastPos)).isWithin(Vec2(it.parent.transformComponent.worldPosition) + (it.origin * scale), it.size * scale)
         }
+    }
+
+    fun free(){
+        freedom = true
+        SonderWindow.INSTANCE.setCursorType(GLFW.GLFW_CURSOR_DISABLED)
+    }
+
+    fun trap(){
+        freedom = false
+        SonderWindow.INSTANCE.setCursorType(GLFW.GLFW_CURSOR_NORMAL)
+
+        val f = -sqrt(1f/3f)
+        renderer.camera.cameraRight = Vec3(sqrt(2f), 0f, -sqrt(2f))
+        renderer.camera.cameraFront.put(f, f, f)
     }
 
     override fun updateAspectRatio(window: WindowI) {
         super.updateAspectRatio(window)
 
-        renderer.camera.updateBounds(Vec2(size + 10f))
+        renderer.camera.updateBounds(Vec2(size + renderer.camera.y))
     }
 
     companion object {

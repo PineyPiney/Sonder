@@ -1,8 +1,8 @@
 package com.pineypiney.sonder.environment
 
+import com.pineypiney.game_engine.objects.GameObject
 import com.pineypiney.game_engine.objects.components.GameClickerComponent
 import com.pineypiney.game_engine.objects.components.SpriteComponent
-import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.game_engine.objects.util.collision.CollisionBox2DRenderer
 import com.pineypiney.game_engine.resources.textures.TextureLoader
 import com.pineypiney.game_engine.util.ResourceKey
@@ -11,7 +11,7 @@ import com.pineypiney.sonder.characters.player.PlayerObject
 import com.pineypiney.sonder.util.inventory.ItemStack
 import com.pineypiney.sonder.util.inventory.Items
 
-class CherryTree: GameObject2D() {
+class CherryTree: GameObject() {
 
     override fun addComponents() {
         super.addComponents()

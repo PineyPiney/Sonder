@@ -1,9 +1,10 @@
 package com.pineypiney.sonder.characters.npcs
 
+import com.pineypiney.game_engine.objects.GameObject
 import com.pineypiney.game_engine.objects.components.AnimatedComponent
 import com.pineypiney.game_engine.objects.components.Collider2DComponent
+import com.pineypiney.game_engine.objects.components.Rigidbody3DComponent
 import com.pineypiney.game_engine.objects.components.SpriteComponent
-import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.game_engine.objects.util.Animation
 import com.pineypiney.game_engine.resources.textures.TextureLoader
 import com.pineypiney.game_engine.util.ResourceKey
@@ -13,7 +14,7 @@ import com.pineypiney.sonder.characters.Character
 import glm_.func.common.abs
 import glm_.vec2.Vec2
 
-class Puppy: GameObject2D() {
+class Puppy: GameObject() {
 
     override var name: String = "Puppy"
 
@@ -37,7 +38,7 @@ class Puppy: GameObject2D() {
 
                 setAnimation(
                     when{
-                        player.velocity.x != 0f -> "walk"
+                        player.getComponent<Rigidbody3DComponent>()?.velocity?.x != 0f -> "walk"
                         player.position.x.abs < 1f -> "talk"
                         else -> "idle"
                     }

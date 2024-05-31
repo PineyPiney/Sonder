@@ -5,6 +5,7 @@ in vec3 pos;
 
 uniform vec4 colour;
 uniform mat4 model;
+uniform float thickness;
 
 out vec4 FragColour;
 
@@ -14,9 +15,9 @@ void main(){
 	float sizeZ = model[2][2];
 
 	int i = 0;
-	if(abs(pos.x) > .5 - (.05 / sizeX)) i++;
-	if(abs(pos.y) > .5 - (.05 / sizeY)) i++;
-	if(abs(pos.z) > .5 - (.05 / sizeZ)) i++;
+	if(abs(pos.x) > .5 - (thickness / sizeX)) i++;
+	if(abs(pos.y) > .5 - (thickness / sizeY)) i++;
+	if(abs(pos.z) > .5 - (thickness / sizeZ)) i++;
 
 	if(i >= 2) FragColour = colour;
 	else discard;

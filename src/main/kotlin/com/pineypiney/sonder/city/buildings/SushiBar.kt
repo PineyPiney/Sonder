@@ -1,4 +1,4 @@
-package com.pineypiney.sonder.environment
+package com.pineypiney.sonder.city.buildings
 
 import com.pineypiney.game_engine.Timer
 import com.pineypiney.game_engine.objects.GameObject
@@ -9,8 +9,11 @@ import com.pineypiney.game_engine.objects.util.collision.CollisionBox3DRenderer
 import com.pineypiney.game_engine.resources.shaders.ShaderLoader
 import com.pineypiney.game_engine.resources.textures.TextureLoader
 import com.pineypiney.game_engine.util.ResourceKey
+import com.pineypiney.game_engine.util.extension_functions.fromHex
+import com.pineypiney.game_engine.util.extension_functions.lerp
 import com.pineypiney.game_engine.util.maths.shapes.Cuboid
 import com.pineypiney.sonder.SonderEngine
+import glm_.f
 import glm_.quat.Quat
 import glm_.vec3.Vec3
 import glm_.vec3.swizzle.xz
@@ -18,10 +21,28 @@ import kotlin.math.*
 
 class SushiBar: GameObject("sushi"){
 
-	val normalMap = TextureLoader[ResourceKey("environment/sushi_bar/sushi_normal")].apply { binding = 1 }
+	fun angle() = Timer.frameTime.f * .5f // SonderEngine.INSTANCE.input.mouse.lastPos.angle()
+	fun colour(angle: Float) = Vec3.fromHex(0xE5741D).lerp(Vec3.fromHex(0xE5E39B), angle)
+
+	val normalMap = TextureLoader[ResourceKey("city/buildings/sushi_bar/sushi_normal")].apply { binding = 1 }
 	val setter: SpriteComponent.() -> Unit = {
-		uniforms.setFloatUniform("ambient") { .5f }
-		uniforms.setVec3Uniform("lightDir") { Vec3(.9 * cos(Timer.frameTime), -.4f, .9 * sin(Timer.frameTime)).normalize() }
+		uniforms.setVec3Uniform("ambient") {
+			val ca = cos(angle())
+			val modifier = max(ca, -.5f)
+			val str = .35f + (.5f * modifier)
+			colour(max(ca, 0f)) * str
+		}
+		uniforms.setVec3Uniform("lightDir") {
+			val a = angle()
+			val x = -sin(a) * sqrt(.5f)
+			val y = -cos(angle())
+			Vec3(x, y, -x).normalize()
+		}
+		uniforms.setVec3Uniform("lightColour") {
+			val a = cos(angle())
+			// Vary between 0 -- 1 between a = -.3 -- 1
+			colour(a) * max(0f, sqrt((a + .3f) * .77f))
+		}
 		uniforms.setFloatUniform("alpha", ::getAlpha)
 	}
 
@@ -34,7 +55,7 @@ class SushiBar: GameObject("sushi"){
 
 	override fun addComponents() {
 		super.addComponents()
-		components.add(Collider3DComponent(this, Cuboid(Vec3(-.3f, 2.15f, .3f), Quat.identity, Vec3(2.1f, 4.3f, 2.1f))))
+		components.add(Collider3DComponent(this, Cuboid(Vec3(0f, 2.15f, 0f), Quat.identity, Vec3(2.1f, 4.3f, 2.1f))))
 	}
 
 	override fun addChildren() {
@@ -43,7 +64,7 @@ class SushiBar: GameObject("sushi"){
 			override fun addComponents() {
 				super.addComponents()
 				val t = this
-				components.add(object : SpriteComponent(t, TextureLoader[ResourceKey("environment/sushi_bar/base")], 200f, ShaderLoader[ResourceKey("vertex/isometric"), ResourceKey("fragment/lit_isometric")]){
+				components.add(object : SpriteComponent(t, TextureLoader[ResourceKey("city/buildings/sushi_bar/base")], 200f, ShaderLoader[ResourceKey("vertex/isometric"), ResourceKey("fragment/lit_isometric")]){
 					override fun setUniforms() {
 						super.setUniforms()
 						setter()
@@ -62,7 +83,7 @@ class SushiBar: GameObject("sushi"){
 					override fun addComponents() {
 						super.addComponents()
 						val t = this
-						components.add(object : SpriteComponent(t, TextureLoader[ResourceKey("environment/sushi_bar/overlay")], 200f, ShaderLoader[ResourceKey("vertex/isometric"), ResourceKey("fragment/lit_isometric")]){
+						components.add(object : SpriteComponent(t, TextureLoader[ResourceKey("city/buildings/sushi_bar/overlay")], 200f, ShaderLoader[ResourceKey("vertex/isometric"), ResourceKey("fragment/lit_isometric")]){
 							override fun setUniforms() {
 								super.setUniforms()
 								setter()
@@ -75,7 +96,7 @@ class SushiBar: GameObject("sushi"){
 
 			override fun init() {
 				super.init()
-				position = Vec3(0f, -.25f, -0f)
+				position = Vec3(-0.25f, 1.9f, -0.3f)
 				rotation = Quat(Vec3(atan(-1f / sqrt(2f)), PI * .25f, 0f))
 			}
 		})

@@ -7,11 +7,15 @@ import com.pineypiney.game_engine.util.input.InputState
 import com.pineypiney.sonder.SonderEngine
 import com.pineypiney.sonder.SonderLogic
 import glm_.vec2.Vec2
+import glm_.vec4.Vec4
 import org.lwjgl.glfw.GLFW
 
 abstract class SonderMenu(engine: SonderEngine) : SonderLogic(engine){
 
 	var selector = JoystickInteractableSelector{ gameObjects.getAllComponentInstances<ButtonComponent>() }
+	init {
+		colour = Vec4(0.2f, .5f, .8f, 1f)
+	}
 
 	override fun open() {
 		super.open()

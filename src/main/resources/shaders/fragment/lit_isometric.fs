@@ -3,8 +3,9 @@
 
 in vec2 texCoords;
 
-uniform float ambient;
+uniform vec3 ambient;
 uniform vec3 lightDir;
+uniform vec3 lightColour;
 
 uniform sampler2D ourTexture;
 uniform sampler2D normalMap;
@@ -21,5 +22,5 @@ void main(){
 	vec3 normal = normalize(vec3(texture(normalMap, texCoords)));
 	float diff = max(-dot(normal, lightDir), 0.0);
 
-	FragColour = vec4(vec3(tex) * (ambient + diff), a);
+	FragColour = vec4(vec3(tex) * (ambient + (diff * lightColour)), a);
 }

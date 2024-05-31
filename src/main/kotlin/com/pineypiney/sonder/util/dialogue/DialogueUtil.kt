@@ -1,7 +1,6 @@
 package com.pineypiney.sonder.util.dialogue
 
 import com.pineypiney.game_engine.objects.GameObject
-import com.pineypiney.game_engine.objects.game_objects.GameObject2D
 import com.pineypiney.sonder.SonderEngine
 import com.pineypiney.sonder.characters.Character
 import com.pineypiney.sonder.ui.dialogue.DialogueBubble
@@ -48,7 +47,7 @@ class DialogueUtil {
     
         fun setDialogue(speaker: String, dialogue: String)
         {
-            val npc = scene.gameObjects.get<GameObject2D>(speaker)?.getComponent<Character>()
+            val npc = scene.gameObjects.get<GameObject>(speaker)?.getComponent<Character>()
             if (npc != null) setDialogue(npc, dialogue)
         }
     

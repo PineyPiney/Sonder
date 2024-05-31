@@ -6,11 +6,11 @@ import glm_.vec3.Vec3
 
 class SonderCamera: OrthographicCamera(SonderWindow.INSTANCE) {
 
-	val z = 10f
+	val y = 40f
 
 	fun updateBounds(bound: Vec2){
-		cameraMinPos = Vec3(-bound.x, z)
-		cameraMaxPos = Vec3(bound.x, z)
+		cameraMinPos = Vec3(-bound.x, y)
+		cameraMaxPos = Vec3(bound.x, y)
 		setPos(cameraPos)
 	}
 

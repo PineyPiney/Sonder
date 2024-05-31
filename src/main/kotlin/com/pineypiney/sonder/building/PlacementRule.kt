@@ -8,7 +8,7 @@ import glm_.vec3.Vec3
 
 class PlacementRule(val rule: (obj: GameObject, scene: SonderGamePlay, position: Vec2) -> Unit) {
 
-	operator fun invoke(obj: GameObject, scene: SonderGamePlay, position: Vec2) = rule(obj, scene, position)
+	operator fun invoke(obj: GameObject, scene: SonderGamePlay, position: Vec3) = rule(obj, scene, Vec2(position))
 
 	companion object {
 		val PLACE_ON_SURFACE = PlacementRule { obj, scene, position ->

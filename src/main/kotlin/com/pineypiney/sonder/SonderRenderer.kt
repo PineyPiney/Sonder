@@ -18,7 +18,6 @@ import com.pineypiney.game_engine.window.WindowI
 import glm_.glm
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
-import glm_.vec4.Vec4
 import org.lwjgl.opengl.GL11C
 
 class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
@@ -54,7 +53,7 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
         GLFunc.clearColour = game.colour
         clearFrameBuffer()
 
-        drawSky()
+        //drawSky()
 
         GLFunc.depthTest = true
         d.add() //0
@@ -63,7 +62,6 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
 
         d.add() //1
 
-        GLFunc.clearColour = Vec4(0f)
         clearFrameBuffer(guiBuffer)
 
         screenShader.setUp(screenUniforms, this)
@@ -75,9 +73,9 @@ class SonderRenderer: BufferedGameRenderer<SonderLogic>() {
 
         d.add() //3
 
+        FrameBuffer.unbind()
         GLFunc.depthTest = false
         GLFunc.viewportO = window.framebufferSize
-        FrameBuffer.unbind()
         clear()
 
         screenShader.setUp(screenUniforms, this)
