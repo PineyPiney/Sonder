@@ -1,1 +1,1 @@
-[name] DIY Table : [sprite] tables/diy_table : [surface] -.58, .8 ; 1.16, 0 : [colours] D8BDBD, E19466; DBA22B, 12C0BA
+[name] DIY Table : [sprite] diy_table : [surface] -.58, .8, 0 ; 1.16, 0 : [colours] D8BDBD, E19466; DBA22B, 12C0BA

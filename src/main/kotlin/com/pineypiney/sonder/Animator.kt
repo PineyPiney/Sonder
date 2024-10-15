@@ -7,6 +7,6 @@ import com.pineypiney.sonder.characters.player.PlayerObject
 
 
 fun main() {
-    LibrarySetUp.initLibraries()
-    ObjectAnimator.run({ PlayerObject() }){ it.getComponent<Character>()?.gravity = false }
+	LibrarySetUp.initLibraries()
+	ObjectAnimator.run({ PlayerObject() }) { it.getComponent<Character>()?.gravity = false }
 }

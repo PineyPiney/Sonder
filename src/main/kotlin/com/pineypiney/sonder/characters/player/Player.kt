@@ -14,9 +14,9 @@ class Player(parent: GameObject) : Character(parent) {
 		return super.getScriptFunctions() + ("has" to ::has)
 	}
 
-	fun has(details: String): Int{
+	fun has(details: String): Int {
 		val parts = details.split(' ')
-		return if(inventory.amount(Items.getItem(parts[1])) >= parts[0].parseInt()) 1 else 0
+		return if (inventory.amount(Items.getItem(parts[1])) >= parts[0].parseInt()) 1 else 0
 	}
 
 }

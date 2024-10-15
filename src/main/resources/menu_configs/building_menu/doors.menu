@@ -1,2 +1,2 @@
-[name] Basic Door : [sprite] doors/door : [colours] D8BDBD, E19466; DBA22B, 12C0BA
-[name] Pumpkin Door : [sprite] doors/pumpkin_door : [colours] D8BDBD, E19466; DBA22B, 12C0BA
+[name] Basic Door : [sprite] door : [colours] D8BDBD, E19466; DBA22B, 12C0BA
+[name] Pumpkin Door : [sprite] pumpkin_door : [colours] D8BDBD, E19466; DBA22B, 12C0BA

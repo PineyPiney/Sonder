@@ -1,16 +1,23 @@
 [name] Furniture : [icon] building/chair_button
-	[name] Chairs : [icon] building/chair_button : [prefab] Chair
+	[name] Chairs : [icon] building/chair_button : [prefab] Chair : [folder] edit/chairs
 		[file] chairs.menu
-	[name] Plants : [icon] building/plant_button : [prefab] Plant
+	[name] Plants : [icon] building/plant_button : [prefab] Plant : [folder] edit/plants
 		[file] plants.menu
-	[name] Tables : [icon] building/table_button : [prefab] Table
+	[name] Tables : [icon] building/table_button : [prefab] Table : [folder] edit/tables
 		[file] tables.menu
 
 [name] Structures : [icon] building/wall_button
-	[name] Doors : [icon] building/door_button : [prefab] Door
+	[name] Doors : [icon] building/door_button : [prefab] Door : [folder] edit/doors
 		[file] doors.menu
-	[name] Walls : [icon] building/wall_button : [prefab] Wall
+	[name] Walls : [icon] building/wall_button : [prefab] Wall : [folder] edit/walls
 		[file] walls.menu
-	[name] Windows : [icon] building/window_button : [prefab] Window
+	[name] Windows : [icon] building/window_button : [prefab] Window : [folder] edit/windows
 		[file] windows.menu
-		
+	[name] Path : [icon] building/path_button : [prefab] Path
+		[file] paths.menu
+
+[name] Nature : [icon] building/tree_button
+	[name] Trees : [icon] building/tree_button : [prefab] Pond : [folder] environment/trees
+		[file] trees.menu
+	[name] Ponds : [icon] building/pond_button : [prefab] Pond : [folder] environment/ponds
+		[file] ponds.menu

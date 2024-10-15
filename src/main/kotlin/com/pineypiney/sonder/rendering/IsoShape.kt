@@ -1,32 +1,35 @@
-package com.pineypiney.sonder.util
+package com.pineypiney.sonder.rendering
 
 import com.pineypiney.game_engine.objects.util.shapes.IndicesShape
 import com.pineypiney.game_engine.resources.textures.Texture
 import com.pineypiney.game_engine.util.maths.shapes.Rect2D
-import com.pineypiney.game_engine.util.maths.shapes.Shape
+import com.pineypiney.game_engine.util.maths.shapes.Shape2D
 import com.pineypiney.game_engine.util.maths.sin30
 import com.pineypiney.game_engine.util.maths.sin60
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
 
-class IsoShape(val texture: Texture, point: Vec2i, x: Float, y: Float, z: Float, ppu: Float): IndicesShape(createVertices(texture, point, x, y, z, ppu), intArrayOf(3, 2), indices) {
+class IsoShape(val texture: Texture, point: Vec2i, x: Float, y: Float, z: Float, ppu: Float) : IndicesShape(
+	createVertices(texture, point, x, y, z, ppu), intArrayOf(3, 2), indices
+) {
 
-	override val shape: Shape
+	override val shape: Shape2D
 		get() = Rect2D(Vec2(0), Vec2(1))
 
 	companion object {
-		val indices = IntArray(18){
-			val i  = it % 3
+		val indices = IntArray(18) {
+			val i = it % 3
 			val j = it / 3
-			when(i){
+			when (i) {
 				0 -> 0
 				1 -> j + 1
 				2 -> ((j + 1) % 6) + 1
 				else -> 0
 			}
 		}
-		fun createVertices(texture: Texture, point: Vec2i, x: Float, y: Float, z: Float, ppu: Float): FloatArray{
+
+		fun createVertices(texture: Texture, point: Vec2i, x: Float, y: Float, z: Float, ppu: Float): FloatArray {
 			val list = mutableListOf<Float>()
 
 			val hx = x * .5f
@@ -65,8 +68,8 @@ class IsoShape(val texture: Texture, point: Vec2i, x: Float, y: Float, z: Float,
 
 			return list.toFloatArray()
 		}
-		
-		fun createVertex(pos: Vec3, tex: Vec2): List<Float>{
+
+		fun createVertex(pos: Vec3, tex: Vec2): List<Float> {
 			return listOf(pos.x, pos.y, pos.z, tex.x, tex.y)
 		}
 	}

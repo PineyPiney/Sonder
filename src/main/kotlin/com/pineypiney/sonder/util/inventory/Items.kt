@@ -1,18 +1,18 @@
 ﻿package com.pineypiney.sonder.util.inventory
 
 class Items {
-    companion object {
+	companion object {
 
-        val AIR = Item("air");
-        val WOOD = Item("wood");
+		val AIR = Item("air");
+		val WOOD = Item("wood");
 
-        val items get() = listOf(
-            WOOD,
-        )
+		val items
+			get() = listOf(
+				WOOD,
+			)
 
-        fun getItem(name: String): Item
-        {
-            return items.firstOrNull { it.name == name } ?: AIR;
-        }
-    }
+		fun getItem(name: String): Item {
+			return items.firstOrNull { it.name == name } ?: AIR;
+		}
+	}
 }

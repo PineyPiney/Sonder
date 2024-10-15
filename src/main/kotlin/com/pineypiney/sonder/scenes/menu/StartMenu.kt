@@ -5,19 +5,19 @@ import com.pineypiney.sonder.SonderEngine
 import com.pineypiney.sonder.scenes.InnScene
 import glm_.vec2.Vec2
 
-class StartMenu(engine: SonderEngine): SonderMenu(engine) {
+class StartMenu(engine: SonderEngine) : SonderMenu(engine) {
 
-    private val startButton = TextButton("Start!", Vec2(-.9f, .2f), Vec2(1.8f, .6f)){
-        gameEngine.setGame(InnScene(gameEngine))
-        gameEngine.openGame()
-    }
+	private val startButton = TextButton("Start!", Vec2(-.9f, .2f), Vec2(1.8f, .6f)) { _, _ ->
+		gameEngine.setGame(InnScene(gameEngine))
+		gameEngine.openGame()
+	}
 
-    private val quitButton = TextButton("Quit Game", Vec2(-.9f, -.8f), Vec2(1.8f, .6f)){
-        window.shouldClose = true
-    }
+	private val quitButton = TextButton("Quit Game", Vec2(-.9f, -.8f), Vec2(1.8f, .6f)) { _, _ ->
+		window.shouldClose = true
+	}
 
-    override fun addObjects() {
-        add(startButton)
-        add(quitButton)
-    }
+	override fun addObjects() {
+		add(startButton)
+		add(quitButton)
+	}
 }

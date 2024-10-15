@@ -1,8 +1,8 @@
 package com.pineypiney.sonder.ui
 
 import com.pineypiney.game_engine.objects.GameObject
-import com.pineypiney.game_engine.objects.components.MeshedTextureComponent
-import com.pineypiney.game_engine.objects.components.SpriteComponent
+import com.pineypiney.game_engine.objects.components.rendering.MeshedTextureComponent
+import com.pineypiney.game_engine.objects.components.rendering.SpriteComponent
 import com.pineypiney.game_engine.objects.menu_items.MenuItem
 import com.pineypiney.game_engine.objects.text.Text
 import com.pineypiney.game_engine.objects.util.shapes.SquareShape
@@ -14,7 +14,7 @@ import glm_.vec3.Vec3
 import glm_.vec4.swizzle.xy
 import glm_.vec4.swizzle.zw
 
-class GamePadKeyLabel(val controller: GamePad, val type: ControlType, val button: Int, val desc: String): MenuItem() {
+class GamePadKeyLabel(val controller: GamePad, val type: ControlType, val button: Int, val desc: String) : MenuItem() {
 
 	val icon: MenuItem
 	val text: GameObject
@@ -22,12 +22,19 @@ class GamePadKeyLabel(val controller: GamePad, val type: ControlType, val button
 	init {
 		val width = 1f / SonderWindow.INSTANCE.aspectRatio
 
-		icon = object : MenuItem(){
+		icon = object : MenuItem() {
 
 			override fun addComponents() {
 				super.addComponents()
 				val (texture, bounds) = controller.getButtonIcon(type, button)
-				components.add(MeshedTextureComponent(this, texture, SpriteComponent.menuShader, SquareShape(Vec2(0f, -.5f), Vec2(1f, .5f), bounds.xy, bounds.xy + bounds.zw)))
+				components.add(
+					MeshedTextureComponent(
+						this,
+						texture,
+						SpriteComponent.menuShader,
+						SquareShape(Vec2(0f, -.5f), Vec2(1f, .5f), bounds.xy, bounds.xy + bounds.zw)
+					)
+				)
 			}
 
 			override fun init() {
